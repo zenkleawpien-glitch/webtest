@@ -75,6 +75,12 @@ FIREGAME SHOP server is running:
   - `ADMIN_PASSWORD` = รหัสผ่านแอดมินเริ่มต้นที่ต้องการ
 6. Deploy แล้วเอา URL ที่ได้ส่งให้เพื่อนได้เลย
 
+### ถ้าต้องการเก็บข้อมูลสินค้าไว้ถาวร
+
+- โปรเจกต์นี้รองรับการ mount disk ที่ `DATA_DIR=/var/data` บน Render แล้ว
+- ถ้าใช้ `render.yaml` ใน repo นี้ Render จะสร้าง service ให้พร้อม mount disk ขนาด 1GB
+- ถ้าไม่ใช้ disk หรือใช้แผนฟรี ข้อมูลใน `data/products.json` อาจไม่อยู่ถาวรตอน redeploy
+
 ### ข้อควรรู้ก่อนแชร์
 
 - ตอนนี้ข้อมูลสินค้าเก็บในไฟล์ `data/products.json` ถ้าโฮสต์ฟรีรีเซ็ตเครื่อง ข้อมูลอาจหายเมื่อ redeploy

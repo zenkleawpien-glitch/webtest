@@ -13,8 +13,17 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const DB_PATH = path.join(__dirname, 'data', 'products.json');
-const CONFIG_PATH = path.join(__dirname, 'data', 'config.json');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const DB_PATH = path.join(DATA_DIR, 'products.json');
+const CONFIG_PATH = path.join(DATA_DIR, 'config.json');
+
+function ensureDataDir() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+}
+
+ensureDataDir();
 
 /* ---------------------------------------------------------
    Initial setup: admin password (default "admin1234")
