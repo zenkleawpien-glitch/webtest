@@ -1,0 +1,19 @@
+{
+  "name": "firegame-shop",
+  "version": "1.0.0",
+  "description": "FIREGAME SHOP - เว็บไซต์ขายไอดี Free Fire พร้อมระบบหลังบ้าน",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "multer": "^2.2.0"
+  }
+}

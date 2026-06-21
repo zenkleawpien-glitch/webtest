@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หลังบ้าน — FIREGAME SHOP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black: #060606;
+    --card: #131313;
+    --card-2: #1a1717;
+    --red: #e5132a;
+    --red-deep: #7a0d18;
+    --red-glow: rgba(229,19,42,0.45);
+    --white: #f2efe9;
+    --grey: #8a8580;
+    --line: rgba(242,239,233,0.1);
+    --green: #2ecc71;
+    --amber: #f5a623;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Prompt',sans-serif;
+    font-weight:300;
+    min-height:100vh;
+  }
+  ::-webkit-scrollbar{width:9px;}
+  ::-webkit-scrollbar-track{background:var(--black);}
+  ::-webkit-scrollbar-thumb{background:var(--red-deep); border-radius:10px;}
+
+  /* ---------- Login screen ---------- */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(229,19,42,0.12), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(229,19,42,0.08), transparent 50%),
+      var(--black);
+  }
+  .login-box{
+    width:100%;
+    max-width:380px;
+    background:linear-gradient(155deg, var(--card), var(--card-2));
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:42px 36px;
+    text-align:center;
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.8);
+  }
+  .login-mark{width:52px;height:52px;margin:0 auto 18px;}
+  .login-box h1{font-size:1.5rem;font-weight:700;margin-bottom:6px;}
+  .login-box h1 span{color:var(--red);}
+  .login-box .sub{color:var(--grey);font-size:0.85rem;margin-bottom:30px;}
+
+  .field{margin-bottom:18px;text-align:left;}
+  .field label{display:block;font-size:0.78rem;color:var(--grey);margin-bottom:8px;letter-spacing:0.03em;}
+  .field input{
+    width:100%;
+    padding:13px 16px;
+    background:rgba(0,0,0,0.3);
+    border:1px solid var(--line);
+    border-radius:10px;
+    color:var(--white);
+    font-family:'Prompt',sans-serif;
+    font-size:0.95rem;
+    font-weight:300;
+    transition:border-color 0.3s ease;
+  }
+  .field input:focus{outline:none; border-color:var(--red);}
+
+  .btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:var(--red);
+    color:#fff;
+    font-family:'Prompt',sans-serif;
+    font-weight:600;
+    font-size:0.95rem;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    box-shadow:0 10px 30px -12px var(--red-glow);
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 14px 36px -10px var(--red-glow);}
+  .btn:disabled{opacity:0.6; cursor:default; transform:none;}
+  .btn.secondary{
+    background:transparent;
+    border:1px solid var(--line);
+    box-shadow:none;
+  }
+  .btn.secondary:hover{border-color:var(--red); color:var(--red);}
+  .btn.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--grey);
+    box-shadow:none;
+  }
+  .btn.ghost:hover{border-color:#e5132a55; color:var(--white);}
+
+  .err-msg{
+    background:rgba(229,19,42,0.12);
+    border:1px solid rgba(229,19,42,0.3);
+    color:#ff8c98;
+    padding:11px 14px;
+    border-radius:8px;
+    font-size:0.85rem;
+    margin-bottom:18px;
+    text-align:left;
+    display:none;
+  }
+  .err-msg.show{display:block;}
+
+  .ok-msg{
+    background:rgba(46,204,113,0.12);
+    border:1px solid rgba(46,204,113,0.3);
+    color:#7be8a8;
+    padding:11px 14px;
+    border-radius:8px;
+    font-size:0.85rem;
+    margin-bottom:18px;
+    text-align:left;
+    display:none;
+  }
+  .ok-msg.show{display:block;}
+
+  /* ---------- Dashboard shell ---------- */
+  #dashboard{display:none;}
+  #dashboard.active{display:block;}
+
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 5vw;
+    background:rgba(6,6,6,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-logo{display:flex;align-items:center;gap:10px;}
+  .topbar-logo svg{width:30px;height:30px;}
+  .topbar-logo .t1{font-weight:700;font-size:1.05rem;}
+  .topbar-logo .t1 span{color:var(--red);}
+  .topbar-logo .t2{font-size:0.65rem;color:var(--grey);letter-spacing:0.25em;}
+
+  .topbar-actions{display:flex;gap:10px;align-items:center;}
+  .topbar-actions a{color:var(--grey);text-decoration:none;font-size:0.85rem;transition:color 0.3s ease;}
+  .topbar-actions a:hover{color:var(--white);}
+
+  .btn-sm{
+    padding:9px 18px;
+    border-radius:8px;
+    font-size:0.82rem;
+    font-weight:500;
+    cursor:pointer;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--white);
+    font-family:'Prompt',sans-serif;
+    transition:all 0.25s ease;
+    display:flex;align-items:center;gap:6px;
+  }
+  .btn-sm svg{width:14px;height:14px;}
+  .btn-sm.primary{background:var(--red); border-color:var(--red);}
+  .btn-sm.primary:hover{box-shadow:0 8px 24px -10px var(--red-glow); transform:translateY(-1px);}
+  .btn-sm.danger:hover{border-color:var(--red); color:var(--red);}
+  .btn-sm:not(.primary):hover{border-color:var(--white);}
+
+  .dash-main{padding:34px 5vw 80px;}
+
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:16px;
+    margin-bottom:36px;
+  }
+  .stat-card{
+    background:linear-gradient(155deg, var(--card), var(--card-2));
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:20px 22px;
+  }
+  .stat-card .n{font-size:1.9rem;font-weight:700;}
+  .stat-card .l{font-size:0.75rem;color:var(--grey);margin-top:4px;letter-spacing:0.04em;}
+  .stat-card.accent .n{color:var(--red);}
+
+  .dash-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:22px;flex-wrap:wrap;gap:14px;
+  }
+  .dash-head h2{font-size:1.4rem;font-weight:600;}
+
+  .table-wrap{
+    background:linear-gradient(155deg, var(--card), var(--card-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-size:0.72rem;
+    color:var(--grey);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:16px 18px;
+    border-bottom:1px solid var(--line);
+    font-weight:500;
+  }
+  tbody td{
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    font-size:0.88rem;
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{transition:background 0.2s ease;}
+  tbody tr:hover{background:rgba(255,255,255,0.02);}
+
+  .prod-thumb{
+    width:42px;height:42px;border-radius:8px;
+    background:linear-gradient(160deg,#1c1414,#0a0a0a);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;flex-shrink:0;
+  }
+  .prod-thumb img{width:100%;height:100%;object-fit:cover;}
+  .prod-thumb svg{width:22px;height:22px;}
+  .prod-name-cell{display:flex;align-items:center;gap:12px;}
+  .prod-name-cell .info .name{font-weight:500;}
+  .prod-name-cell .info .id{font-size:0.72rem;color:var(--grey);}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 11px;border-radius:999px;font-size:0.72rem;font-weight:500;
+  }
+  .badge.available{background:rgba(46,204,113,0.12); color:var(--green); border:1px solid rgba(46,204,113,0.3);}
+  .badge.sold{background:rgba(245,166,35,0.12); color:var(--amber); border:1px solid rgba(245,166,35,0.3);}
+  .badge.hidden{background:rgba(138,133,128,0.12); color:var(--grey); border:1px solid rgba(138,133,128,0.3);}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  .row-actions{display:flex;gap:8px;}
+  .icon-btn{
+    width:32px;height:32px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;border:1px solid var(--line);cursor:pointer;
+    color:var(--grey);transition:all 0.25s ease;
+  }
+  .icon-btn svg{width:15px;height:15px;}
+  .icon-btn:hover{border-color:var(--red); color:var(--red);}
+  .icon-btn.danger-hover:hover{background:rgba(229,19,42,0.1);}
+
+  select.status-select{
+    background:rgba(0,0,0,0.3);
+    border:1px solid var(--line);
+    color:var(--white);
+    font-family:'Prompt',sans-serif;
+    font-size:0.78rem;
+    padding:6px 10px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  select.status-select:focus{outline:none; border-color:var(--red);}
+
+  .empty-table{
+    padding:60px 20px;text-align:center;color:var(--grey);
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;inset:0;z-index:100;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(4px);
+    align-items:flex-start;justify-content:center;
+    padding:5vh 20px;
+    overflow-y:auto;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    width:100%;max-width:640px;
+    background:linear-gradient(155deg, var(--card), var(--card-2));
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:32px;
+    margin:auto 0;
+    animation:modalIn 0.35s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes modalIn{from{opacity:0; transform:translateY(16px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);}}
+
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+  .modal-head h3{font-size:1.3rem;font-weight:600;}
+  .modal-close{
+    width:32px;height:32px;border-radius:50%;border:1px solid var(--line);
+    background:transparent;color:var(--grey);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:all 0.25s ease;
+  }
+  .modal-close:hover{border-color:var(--red); color:var(--red);}
+  .modal-close svg{width:15px;height:15px;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+  .form-grid.full{grid-template-columns:1fr;}
+  .f-group label{display:block;font-size:0.76rem;color:var(--grey);margin-bottom:7px;}
+  .f-group input, .f-group select, .f-group textarea{
+    width:100%;
+    padding:11px 14px;
+    background:rgba(0,0,0,0.3);
+    border:1px solid var(--line);
+    border-radius:9px;
+    color:var(--white);
+    font-family:'Prompt',sans-serif;
+    font-size:0.9rem;
+    font-weight:300;
+    transition:border-color 0.25s ease;
+  }
+  .f-group input:focus, .f-group select:focus, .f-group textarea:focus{outline:none; border-color:var(--red);}
+  .f-group textarea{resize:vertical; min-height:80px; font-family:'Prompt',sans-serif;}
+  .f-group .hint{font-size:0.7rem; color:var(--grey); margin-top:5px; opacity:0.8;}
+
+  .img-preview{
+    margin-top:10px;
+    width:100%;height:140px;
+    border-radius:10px;
+    background:linear-gradient(160deg,#1c1414,#0a0a0a);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;border:1px solid var(--line);
+    color:var(--grey); font-size:0.78rem;
+  }
+  .img-preview img{width:100%;height:100%;object-fit:cover;}
+
+  .modal-actions{
+    display:flex;gap:12px;margin-top:24px;
+    padding-top:20px;border-top:1px solid var(--line);
+  }
+  .modal-actions .btn{flex:1;}
+
+  .confirm-text{color:var(--grey); font-size:0.9rem; line-height:1.7; margin-bottom:6px;}
+  .confirm-text b{color:var(--white); font-weight:500;}
+
+  @media(max-width:640px){
+    .form-grid{grid-template-columns:1fr;}
+    .table-wrap{overflow-x:auto;}
+    table{min-width:640px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-mark">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 4C24 4 14 14 14 25C14 33 18.5 38 24 38C29.5 38 34 33 34 25C34 14 24 4 24 4Z" fill="url(#fg)"/>
+        <path d="M24 16C24 16 19 22 19 27.5C19 31.5 21.2 34 24 34C26.8 34 29 31.5 29 27.5C29 22 24 16 24 16Z" fill="#0a0a0a"/>
+        <defs><linearGradient id="fg" x1="14" y1="4" x2="34" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff4d5e"/><stop offset="1" stop-color="#7a0d18"/></linearGradient></defs>
+      </svg>
+    </div>
+    <h1>FIRE<span>GAME</span> ADMIN</h1>
+    <div class="sub">เข้าสู่ระบบจัดการร้านค้า</div>
+
+    <div class="err-msg" id="loginErr"></div>
+
+    <div class="field">
+      <label>รหัสผ่านแอดมิน</label>
+      <input type="password" id="loginPassword" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+    </div>
+    <button class="btn" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 4C24 4 14 14 14 25C14 33 18.5 38 24 38C29.5 38 34 33 34 25C34 14 24 4 24 4Z" fill="url(#fg2)"/>
+        <path d="M24 16C24 16 19 22 19 27.5C19 31.5 21.2 34 24 34C26.8 34 29 31.5 29 27.5C29 22 24 16 24 16Z" fill="#0a0a0a"/>
+        <defs><linearGradient id="fg2" x1="14" y1="4" x2="34" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff4d5e"/><stop offset="1" stop-color="#7a0d18"/></linearGradient></defs>
+      </svg>
+      <div>
+        <div class="t1">FIRE<span>GAME</span> ADMIN</div>
+        <div class="t2">DASHBOARD</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a href="/" target="_blank">ดูหน้าร้าน ↗</a>
+      <button class="btn-sm" onclick="openPasswordModal()">เปลี่ยนรหัสผ่าน</button>
+      <button class="btn-sm" onclick="doLogout()">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="dash-main">
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="n" id="statTotal">0</div><div class="l">สินค้าทั้งหมด</div></div>
+      <div class="stat-card accent"><div class="n" id="statAvail">0</div><div class="l">พร้อมขาย</div></div>
+      <div class="stat-card"><div class="n" id="statSold">0</div><div class="l">ขายแล้ว</div></div>
+      <div class="stat-card"><div class="n" id="statHidden">0</div><div class="l">ซ่อนอยู่</div></div>
+    </div>
+
+    <div class="dash-head">
+      <h2>จัดการสินค้า</h2>
+      <button class="btn-sm primary" onclick="openProductModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        เพิ่มไอดีใหม่
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>สินค้า</th>
+            <th>ระดับ</th>
+            <th>ราคา</th>
+            <th>สถานะ</th>
+            <th style="text-align:right;">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="productTableBody">
+          <tr><td colspan="5" class="empty-table">กำลังโหลด...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODAL: ADD/EDIT PRODUCT ============ -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="productModalTitle">เพิ่มไอดีใหม่</h3>
+      <button class="modal-close" onclick="closeProductModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="err-msg" id="productFormErr"></div>
+
+    <input type="hidden" id="f_editId">
+
+    <div class="form-grid">
+      <div class="f-group">
+        <label>ชื่อสินค้า *</label>
+        <input type="text" id="f_name" placeholder="เช่น ไอดีแรงค์ฮีท สกินจัดเต็ม">
+      </div>
+      <div class="f-group">
+        <label>รหัสไอดี (เว้นว่างให้สุ่มอัตโนมัติ)</label>
+        <input type="text" id="f_id" placeholder="เช่น FF-1007">
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="f-group">
+        <label>แรงค์เกม</label>
+        <input type="text" id="f_rank" placeholder="เช่น Heroic, Grandmaster">
+      </div>
+      <div class="f-group">
+        <label>ระดับ/หมวด</label>
+        <select id="f_tier">
+          <option value="เริ่มต้น">เริ่มต้น</option>
+          <option value="กลาง">กลาง</option>
+          <option value="ระดับสูง">ระดับสูง</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="f-group">
+        <label>ราคาขาย (บาท) *</label>
+        <input type="number" id="f_price" placeholder="2900">
+      </div>
+      <div class="f-group">
+        <label>ราคาเดิม (บาท)</label>
+        <input type="number" id="f_oldPrice" placeholder="3500">
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="f-group">
+        <label>เลเวล</label>
+        <input type="number" id="f_level" placeholder="72">
+      </div>
+      <div class="f-group">
+        <label>จำนวนสกิน</label>
+        <input type="number" id="f_skins" placeholder="48">
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="f-group">
+        <label>เพชรสะสม</label>
+        <input type="text" id="f_diamonds" placeholder="เช่น 12,000+">
+      </div>
+      <div class="f-group">
+        <label>สถานะสินค้า</label>
+        <select id="f_status">
+          <option value="available">พร้อมขาย</option>
+          <option value="sold">ขายแล้ว</option>
+          <option value="hidden">ซ่อน (ไม่แสดงหน้าร้าน)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grid full">
+      <div class="f-group">
+        <label>แท็ก (คั่นด้วยจุลภาค ,)</label>
+        <input type="text" id="f_tags" placeholder="เช่น สกินปืนแรร์, Bundle ครบ, บัญชีแท้ 100%">
+      </div>
+    </div>
+
+    <div class="form-grid full">
+      <div class="f-group">
+        <label>รายละเอียดสินค้า</label>
+        <textarea id="f_desc" placeholder="อธิบายรายละเอียดไอดี จุดเด่น ของหายาก ฯลฯ"></textarea>
+      </div>
+    </div>
+
+    <div class="form-grid full">
+      <div class="f-group">
+        <label>ลิงก์รูปภาพ (URL)</label>
+        <input type="text" id="f_image" placeholder="https://..." oninput="updateImgPreview()">
+        <div class="hint">วางลิงก์รูปจาก Facebook, Imgur หรือเว็บเก็บรูปอื่น ๆ — เว้นว่างได้ถ้ายังไม่มีรูป</div>
+        <div class="img-preview" id="imgPreviewBox">ยังไม่มีรูปภาพ</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeProductModal()">ยกเลิก</button>
+      <button class="btn" id="saveProductBtn" onclick="saveProduct()">บันทึกสินค้า</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: DELETE CONFIRM ============ -->
+<div class="modal-overlay" id="deleteModalOverlay">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-head">
+      <h3>ยืนยันการลบสินค้า</h3>
+      <button class="modal-close" onclick="closeDeleteModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="confirm-text">คุณต้องการลบสินค้า <b id="deleteProductName"></b> ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้</p>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeDeleteModal()">ยกเลิก</button>
+      <button class="btn" style="background:var(--red);" onclick="confirmDelete()">ลบสินค้า</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: CHANGE PASSWORD ============ -->
+<div class="modal-overlay" id="passwordModalOverlay">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-head">
+      <h3>เปลี่ยนรหัสผ่านแอดมิน</h3>
+      <button class="modal-close" onclick="closePasswordModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="err-msg" id="pwErr"></div>
+    <div class="ok-msg" id="pwOk"></div>
+    <div class="f-group" style="margin-bottom:16px;">
+      <label>รหัสผ่านเดิม</label>
+      <input type="password" id="pw_current">
+    </div>
+    <div class="f-group">
+      <label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label>
+      <input type="password" id="pw_new">
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closePasswordModal()">ยกเลิก</button>
+      <button class="btn" onclick="changePassword()">บันทึกรหัสใหม่</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let allProducts = [];
+let deleteTargetId = null;
+
+/* ---------------- Auth ---------------- */
+async function checkAuth(){
+  const res = await fetch('/api/me');
+  const data = await res.json();
+  if(data.isAdmin){
+    showDashboard();
+  } else {
+    showLogin();
+  }
+}
+
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').classList.remove('active');
+}
+
+function showDashboard(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').classList.add('active');
+  loadProducts();
+}
+
+async function doLogin(){
+  const password = document.getElementById('loginPassword').value;
+  const errBox = document.getElementById('loginErr');
+  errBox.classList.remove('show');
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'กำลังเข้าสู่ระบบ...';
+
+  try{
+    const res = await fetch('/api/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      errBox.textContent = data.error || 'เข้าสู่ระบบไม่สำเร็จ';
+      errBox.classList.add('show');
+    } else {
+      showDashboard();
+    }
+  }catch(e){
+    errBox.textContent = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้';
+    errBox.classList.add('show');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'เข้าสู่ระบบ';
+  }
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') doLogin();
+});
+
+async function doLogout(){
+  await fetch('/api/logout', { method:'POST' });
+  showLogin();
+}
+
+/* ---------------- Load & render products ---------------- */
+async function loadProducts(){
+  const res = await fetch('/api/admin/products');
+  if(res.status === 401){ showLogin(); return; }
+  allProducts = await res.json();
+  renderStats();
+  renderTable();
+}
+
+function renderStats(){
+  document.getElementById('statTotal').textContent = allProducts.length;
+  document.getElementById('statAvail').textContent = allProducts.filter(p=>p.status==='available').length;
+  document.getElementById('statSold').textContent = allProducts.filter(p=>p.status==='sold').length;
+  document.getElementById('statHidden').textContent = allProducts.filter(p=>p.status==='hidden').length;
+}
+
+const flameSVGsmall = `<svg viewBox="0 0 64 64" fill="none"><path d="M32 6C32 6 18 19 18 34C18 44 24 51 32 51C40 51 46 44 46 34C46 19 32 6 32 6Z" fill="#e5132a" opacity="0.9"/><path d="M32 24C32 24 25 32 25 39C25 44 28 47.5 32 47.5C36 47.5 39 44 39 39C39 32 32 24 32 24Z" fill="#0a0a0a"/></svg>`;
+
+function statusBadge(status){
+  const map = {
+    available: ['available', 'พร้อมขาย'],
+    sold: ['sold', 'ขายแล้ว'],
+    hidden: ['hidden', 'ซ่อนอยู่']
+  };
+  const [cls, label] = map[status] || map.available;
+  return `<span class="badge ${cls}"><span class="dot"></span>${label}</span>`;
+}
+
+function renderTable(){
+  const tbody = document.getElementById('productTableBody');
+  if(allProducts.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-table">ยังไม่มีสินค้าในระบบ กดปุ่ม "เพิ่มไอดีใหม่" เพื่อเริ่มเพิ่มสินค้า</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allProducts.map(p => `
+    <tr>
+      <td>
+        <div class="prod-name-cell">
+          <div class="prod-thumb">
+            ${p.image ? `<img src="${p.image}" onerror="this.parentElement.innerHTML='${flameSVGsmall.replace(/'/g, "\\'")}'">` : flameSVGsmall}
+          </div>
+          <div class="info">
+            <div class="name">${escapeHtml(p.name)}</div>
+            <div class="id">${p.id}</div>
+          </div>
+        </div>
+      </td>
+      <td>${escapeHtml(p.rank||'—')}<br><span style="color:var(--grey);font-size:0.76rem;">${escapeHtml(p.tier||'')}</span></td>
+      <td>฿${Number(p.price).toLocaleString()}</td>
+      <td>
+        <select class="status-select" onchange="quickChangeStatus('${p.id}', this.value)">
+          <option value="available" ${p.status==='available'?'selected':''}>พร้อมขาย</option>
+          <option value="sold" ${p.status==='sold'?'selected':''}>ขายแล้ว</option>
+          <option value="hidden" ${p.status==='hidden'?'selected':''}>ซ่อน</option>
+        </select>
+      </td>
+      <td>
+        <div class="row-actions" style="justify-content:flex-end;">
+          <button class="icon-btn" title="แก้ไข" onclick="openProductModal('${p.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg>
+          </button>
+          <button class="icon-btn danger-hover" title="ลบ" onclick="openDeleteModal('${p.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+async function quickChangeStatus(id, status){
+  await fetch('/api/admin/products/' + encodeURIComponent(id), {
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ status })
+  });
+  loadProducts();
+}
+
+/* ---------------- Product modal (add/edit) ---------------- */
+function openProductModal(editId){
+  const overlay = document.getElementById('productModalOverlay');
+  const errBox = document.getElementById('productFormErr');
+  errBox.classList.remove('show');
+  document.getElementById('f_editId').value = editId || '';
+
+  if(editId){
+    const p = allProducts.find(x => x.id === editId);
+    document.getElementById('productModalTitle').textContent = 'แก้ไขสินค้า: ' + p.id;
+    document.getElementById('f_id').value = p.id;
+    document.getElementById('f_id').disabled = true;
+    document.getElementById('f_name').value = p.name || '';
+    document.getElementById('f_rank').value = p.rank || '';
+    document.getElementById('f_tier').value = p.tier || 'กลาง';
+    document.getElementById('f_price').value = p.price || '';
+    document.getElementById('f_oldPrice').value = p.oldPrice || '';
+    document.getElementById('f_level').value = p.level || '';
+    document.getElementById('f_skins').value = p.skins || '';
+    document.getElementById('f_diamonds').value = p.diamonds || '';
+    document.getElementById('f_status').value = p.status || 'available';
+    document.getElementById('f_tags').value = (p.tags || []).join(', ');
+    document.getElementById('f_desc').value = p.desc || '';
+    document.getElementById('f_image').value = p.image || '';
+  } else {
+    document.getElementById('productModalTitle').textContent = 'เพิ่มไอดีใหม่';
+    document.getElementById('f_id').disabled = false;
+    ['f_id','f_name','f_rank','f_price','f_oldPrice','f_level','f_skins','f_diamonds','f_tags','f_desc','f_image']
+      .forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f_tier').value = 'กลาง';
+    document.getElementById('f_status').value = 'available';
+  }
+
+  updateImgPreview();
+  overlay.classList.add('show');
+}
+
+function closeProductModal(){
+  document.getElementById('productModalOverlay').classList.remove('show');
+}
+
+function updateImgPreview(){
+  const url = document.getElementById('f_image').value.trim();
+  const box = document.getElementById('imgPreviewBox');
+  if(!url){
+    box.innerHTML = 'ยังไม่มีรูปภาพ';
+    return;
+  }
+  box.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='ไม่สามารถโหลดรูปจากลิงก์นี้ได้'">`;
+}
+
+async function saveProduct(){
+  const errBox = document.getElementById('productFormErr');
+  errBox.classList.remove('show');
+
+  const editId = document.getElementById('f_editId').value;
+  const name = document.getElementById('f_name').value.trim();
+  const price = document.getElementById('f_price').value;
+
+  if(!name || !price){
+    errBox.textContent = 'กรุณากรอกชื่อสินค้าและราคาขาย';
+    errBox.classList.add('show');
+    return;
+  }
+
+  const payload = {
+    id: document.getElementById('f_id').value.trim(),
+    name,
+    rank: document.getElementById('f_rank').value.trim(),
+    tier: document.getElementById('f_tier').value,
+    price: Number(price),
+    oldPrice: Number(document.getElementById('f_oldPrice').value) || 0,
+    level: Number(document.getElementById('f_level').value) || 0,
+    skins: Number(document.getElementById('f_skins').value) || 0,
+    diamonds: document.getElementById('f_diamonds').value.trim(),
+    status: document.getElementById('f_status').value,
+    tags: document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    desc: document.getElementById('f_desc').value.trim(),
+    image: document.getElementById('f_image').value.trim()
+  };
+
+  const btn = document.getElementById('saveProductBtn');
+  btn.disabled = true;
+  btn.textContent = 'กำลังบันทึก...';
+
+  try{
+    let res;
+    if(editId){
+      res = await fetch('/api/admin/products/' + encodeURIComponent(editId), {
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch('/api/admin/products', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+    }
+    const data = await res.json();
+    if(!res.ok){
+      errBox.textContent = data.error || 'บันทึกไม่สำเร็จ';
+      errBox.classList.add('show');
+      return;
+    }
+    closeProductModal();
+    loadProducts();
+  }catch(e){
+    errBox.textContent = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้';
+    errBox.classList.add('show');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'บันทึกสินค้า';
+  }
+}
+
+/* ---------------- Delete modal ---------------- */
+function openDeleteModal(id){
+  const p = allProducts.find(x => x.id === id);
+  deleteTargetId = id;
+  document.getElementById('deleteProductName').textContent = `${p.name} (${p.id})`;
+  document.getElementById('deleteModalOverlay').classList.add('show');
+}
+function closeDeleteModal(){
+  document.getElementById('deleteModalOverlay').classList.remove('show');
+  deleteTargetId = null;
+}
+async function confirmDelete(){
+  if(!deleteTargetId) return;
+  await fetch('/api/admin/products/' + encodeURIComponent(deleteTargetId), { method:'DELETE' });
+  closeDeleteModal();
+  loadProducts();
+}
+
+/* ---------------- Password modal ---------------- */
+function openPasswordModal(){
+  document.getElementById('pw_current').value = '';
+  document.getElementById('pw_new').value = '';
+  document.getElementById('pwErr').classList.remove('show');
+  document.getElementById('pwOk').classList.remove('show');
+  document.getElementById('passwordModalOverlay').classList.add('show');
+}
+function closePasswordModal(){
+  document.getElementById('passwordModalOverlay').classList.remove('show');
+}
+async function changePassword(){
+  const currentPassword = document.getElementById('pw_current').value;
+  const newPassword = document.getElementById('pw_new').value;
+  const errBox = document.getElementById('pwErr');
+  const okBox = document.getElementById('pwOk');
+  errBox.classList.remove('show');
+  okBox.classList.remove('show');
+
+  const res = await fetch('/api/change-password', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ currentPassword, newPassword })
+  });
+  const data = await res.json();
+  if(!res.ok){
+    errBox.textContent = data.error || 'เปลี่ยนรหัสผ่านไม่สำเร็จ';
+    errBox.classList.add('show');
+  } else {
+    okBox.textContent = 'เปลี่ยนรหัสผ่านสำเร็จแล้ว';
+    okBox.classList.add('show');
+    setTimeout(closePasswordModal, 1200);
+  }
+}
+
+/* ---------------- Init ---------------- */
+checkAuth();
+</script>
+
+</body>
+</html>
